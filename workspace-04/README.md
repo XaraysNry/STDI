@@ -9,8 +9,8 @@ https://docs.docker.com/compose/install/ jika belum.
 
 ## 4.1.2 Struktur Direktori dan FIle
 File yang diperlukan adalah sebagai berikut:
+![a2](images/a2.png)
 
-<img src="images/a2.png" alt="Deskripsi Gambar" width="500">
 
 Berikut adalah penjelasan dari masing-masing file tersebut:
 1. 00_init.sql: file yang berisi perintah-perintah SQL yang akan dijalankan saat primary server diinisialisasi dan dijalankan. Fungsi utamanya adalah untuk membuat user yang akan melakukan replikasi ke primary server serta slot replikasinya.  
