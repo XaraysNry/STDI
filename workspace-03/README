@@ -1,0 +1,88 @@
+NAMA:Aditya Wisnu Naraya
+
+3.1 Sinkroniasasi Waktu
+1. Instalasi NetTime menggunakan windows dengan install NTP (Net Time Protocol) menggunakan software NetTime dari timesynctool
+instal_nettime.png
+2. Penjelsan proses singkronisasi
+a. Komputer mengirim request ke server waktu (NTP server).
+b. Server mengirim balik waktu yang akurat (berdasarkan atomic clock).
+c. NetTime menghitung:
+    - Delay jaringan
+    - Perbedaan waktu (offset)
+d. Sistem akan:
+    - Menyesuaikan waktu secara bertahap (tidak langsung loncat drastis)
+    - Atau langsung update jika selisih besar
+5. contoh hasil
+example_result_nettime_0ms.png
+
+3.2 Vector Clock
+vector clock digunakan untuk pengurutan event dalam suatu sistem terdistribusi. Berikut adalah contoh source code untuk vector clock. Source code diambil dari banyak sumber di internet.
+vclocks.py
+
+
+output vclocks.py
+P0: [0, 0, 0]
+P1: [0, 0, 0]
+P2: [0, 0, 0]
+P0: [1, 0, 0]
+P0: [2, 0, 0]
+P1: [2, 1, 0]
+P2: [0, 0, 1]
+P1: [2, 2, 0]
+P2: [2, 2, 2]
+VC0 happens before VC1: True
+VC1 happens before VC0: False
+VC0 is concurrent with VC2: False
+1. penjelasan dari keluaran tersebut: perbandingan dengan algoritma tersebut jika vector clocks dilaksanakan
+secara manual yaitu penjelasan sebagai berikut
+    a. penjelasan output awal 
+    awal
+    P0: [0, 0, 0]
+    P1: [0, 0, 0]
+    P2: [0, 0, 0]
+    itu merupakan semua proses yang di mulai dari 0 belum ada event.
+
+    Event 1 - P0 increment
+    P0: [1, 0, 0]
+    proses 0 melakukan event lokal
+    manual: tambah index ke-0
+
+    Event 2 - P0 kirim ke P1
+    P0: [2, 0, 0]
+    P1: [2, 1, 0]
+    Penjelasan: P0 melakukan increment dulu lalu P1 receive ambil max 
+    max([0,0,0], [2,0,0]) = [2,0,0]
+    lalu increment dirinya sendiri
+    manual:
+    merge lalu ambil nilai terbesar dan di tambah event sendiri
+
+    Event 3 - P2 event lokal
+    P2: [0, 0, 1]
+    proses 2 increment sendiri
+    manual: index ke-2 +1
+
+    Event 4 - P1 kirim ke P2
+    P1: [2, 2, 0]
+    P2: [2, 2, 2]
+    Penjelasan: P1 melakukan increment [2, 2, 0], lalu P2 receive dan merge dengan mengambil nilai tertinggi 
+    max([0,0,1], [2,2,0]) = [2,2,1]
+    lalu melakukan increment sendiri +1 [2,2,2] 
+    manual sama persis
+
+    Casuality Check
+    1. VC0 happens before VC1: True
+        [2,0,0] < [2,2,0]
+        semua =< dan ada yang <
+        Benar (causal)
+    2. VC1 happens before VC0: False
+        [2,2,0] tidak =< [2,0,0]
+        SALAH (tidak terjadi sebelumnya)
+    3. VC0 is concurrent with VC2: False
+        [2,0,0] dan [2,2,2]
+        VC0 < VC2
+        berarti bukan concurrent
+Kesimpulan program tersebut 100% sesuai dengan algoritma manual
+
+2. Buat modul Python untuk class VectorClock tersebut dan buatlah contoh cara
+menggunakan modul tersebut.
+
